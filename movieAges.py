@@ -8,7 +8,7 @@ class Movie():
     def __init__(self, title):
         self.title = title
         self.url = ""
-        self.actorName = []
+        self.actorNameURL = []
 
 class MyHTMLParser(HTMLParser):
     def __init__(self):
@@ -32,14 +32,13 @@ class MyHTMLParser(HTMLParser):
                 if attr[0].lower() == "href" and attr[1].lower() == "poster shadowed":
                     print "attr:", attr
                 elif attr[0].lower() == "href" and attr[1].startswith("/title") and attr[1].endswith("tt"):
-                    #print "link:", attr[1]
                     listOfMovies[len(listOfMovies)-1].url = attr[1]
+
 
         if tag == "a":
             for name, value in attrs:
                 if name == "itemprop" and value == "url":
                     self.d = True
-                    #print name, value
 
 os.system("wget -q -O movieList http://www.imdb.com/movies-in-theaters/?ref_=inth_inth")
 
@@ -56,7 +55,9 @@ for item in listOfMovies:
     wget = "wget -q -O moviePage " + actors
     os.system(wget)
 
-#<span class="itemprop" itemprop="name">Tenoch Huerta</span>
-for line in open("moviePage", "r"):
-    if '<span class="itemprop" itemprop="name">' in line:
-        print line
+    for line in open("moviePage", "r"):
+        if "/name/nm" in line and "?ref_=tt_cl_t" in line:
+            # get rid of a href
+            item.actorNameURL.append(line)
+    for link in item.actorNameURL:
+        print link
