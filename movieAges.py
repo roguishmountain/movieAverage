@@ -1,8 +1,10 @@
 from html.parser import HTMLParser
 import os
+from datetime import date
 
 # add file download and name
 listOfMovies = []
+actor_age = []
 
 class Movie():
     def __init__(self, title):
@@ -37,9 +39,9 @@ class MyHTMLParser(HTMLParser):
 
         if tag == "a":
             for attr in attrs:
-                if attr[0].lower() == "href" and attr[1].lower() == "poster shadowed":
-                    print("attr: " + attr)
-                elif attr[0].lower() == "href" and attr[1].startswith("/title") and attr[1].endswith("tt"):
+                #if attr[0].lower() == "href" and attr[1].lower() == "poster shadowed":
+                #    print("attr: " + attr)
+                if attr[0].lower() == "href" and attr[1].startswith("/title") and attr[1].endswith("tt"):
                     listOfMovies[len(listOfMovies)-1].url = attr[1]
 
         if tag == "a":
@@ -50,7 +52,15 @@ class MyHTMLParser(HTMLParser):
         if tag == "time" and self.actor_page:
             for attr in attrs:
                 if attr[0].lower() == "datetime":
-                    print(attr)
+                    dt = date.today()
+                    #print(dt)
+                    #print(attr[1])
+                    actor_bday_arr = attr[1].split("-")
+                    if int(actor_bday_arr[1]) == 0 or  int(actor_bday_arr[2]) == 0:
+                        actor_age.append(dt.year - int(actor_bday_arr[0]))
+                    else:
+                        actor_bday_date = date(int(actor_bday_arr[0]), int(actor_bday_arr[1]), int(actor_bday_arr[2]))
+                        actor_age.append(int(((dt - actor_bday_date).days)/365))
 
 os.system("wget -q -O movieList http://www.imdb.com/movies-in-theaters/?ref_=inth_inth")
 
@@ -62,7 +72,7 @@ file.close()
 
 url_base = "http://www.imdb.com"
 for item in listOfMovies:
-    print(item.title)
+    #print(item.title)
     movie_page = url_base + item.url
     # reusing file name so there's not a ton of files at the end
     # probably delete downloaded files
@@ -87,4 +97,13 @@ for item in listOfMovies:
             parse = MyHTMLParser(True)
             parse.feed(stream)
             file.close()
+    item.ages = actor_age
+    actor_age = []
+    sum = 0
+    for age in item.ages:
+        sum += age
+    item.avg_age = sum/len(item.ages)
+
+for movie in listOfMovies:
+    print("Title:", movie.title, "Average age in years:", movie.avg_age)
 
