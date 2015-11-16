@@ -1,5 +1,8 @@
 # average age of actors in movies currently playing. 
 Comments:
+
+The Movie class holds the title of the movie (I decided to leave the year in, but that can easily be removed), url of the title of the movie, ages of the actors, and the average age of the actors. The MyHTMLParser slass inherits from HTMLParser. It has methods that can be overridden to handle start/ends tags and data. This class doesn't handle nested tags well, so some pattern matching was done when nested tags became an issue. The URLs on IMDB follow a pattern so it was simple to use pattern matching to find if it was a useable URL. After finding the title and URL of the movie, it loops over the movie pages and downloads the actor page source for the movie cast. The HTMLParser is used to find the birthdate of the actor and then the average age is found and added to the class variable. 
+
 It runs kind of slowly. It takes about 2.5 minutes when I run it on my computer. 
 
 real	2m30.350s
