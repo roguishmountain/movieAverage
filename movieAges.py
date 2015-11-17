@@ -7,6 +7,7 @@ listOfMovies = []
 # holds actor's ages for current movie
 actor_age = []
 
+################################################################
 
 # class Movie holds information on each movie
 # the constructors takes the title of the movie
@@ -23,6 +24,8 @@ class Movie():
         # average age of actors
         self.avg_age = 0
 
+
+################################################################
 
 # class MyHTMLParser inherits from HTMLParser
 # handles the html tag parsing
@@ -67,7 +70,7 @@ class MyHTMLParser(HTMLParser):
                     actor_bday_arr = attr[1].split("-")
                     # if the day or month is not specified
                     # use the year
-                    if int(actor_bday_arr[1]) == 0 or  int(actor_bday_arr[2]) == 0:
+                    if int(actor_bday_arr[1]) == 0 or int(actor_bday_arr[2]) == 0:
                         actor_age.append(dt.year - int(actor_bday_arr[0]))
                     # if the page listed the full birthday
                     # subtract to find how many days old they are
@@ -75,6 +78,8 @@ class MyHTMLParser(HTMLParser):
                     else:
                         actor_bday_date = date(int(actor_bday_arr[0]), int(actor_bday_arr[1]), int(actor_bday_arr[2]))
                         actor_age.append(int((dt - actor_bday_date).days/365))
+
+################################################################
 
 # download a list of movies
 os.system("wget -q -O movieList http://www.imdb.com/movies-in-theaters/?ref_=inth_inth")
@@ -85,6 +90,8 @@ stream = f.read()
 parse = MyHTMLParser(False)
 parse.feed(stream)
 f.close()
+
+################################################################
 
 url_base = "http://www.imdb.com"
 # loop over list of movie
@@ -124,14 +131,24 @@ for movie in listOfMovies:
     sum = 0
     for age in movie.ages:
         sum += age
-    movie.avg_age = sum/len(movie.ages)
+    if len(movie.ages) > 0:
+        movie.avg_age = sum/len(movie.ages)
+    else:
+        movie.avg_age = "Unknown"
+
+################################################################
 
 # remove source pages
 os.system("rm actorPage")
 os.system("rm moviePage")
 os.system("rm movieList")
 
+################################################################
+
 # print results
 for movie in listOfMovies:
-    print("Title:", movie.title, "Average age in years:", movie.avg_age)
+    try:
+        print('Movie: {0:30s} Average Age: {1:2f}'.format(movie.title, movie.avg_age))
+    except:
+        print('Movie: {0:30s} Average Age: {1:2s}'.format(movie.title, movie.avg_age))
 
